@@ -20,30 +20,39 @@ export function unixNanoNow() {
     return BigInt(m).times(1e6).add(BigInt(d[0]).times(1e9).plus(d[1])).valueOf();
 }
 
+// PayloadOptions is the interface used for the Payload Constructor
 export interface PayloadOptions {
     uri: string
     endpoint: string
 }
 
+// GenerateOptions is the interface used for the generate method
 export interface GenerateOptions {
     ttl: number
 }
 
+// PayloadObject is the interface description of the JSON Payload
+// Parsed into an object
 export interface PayloadObject {
     data: string
     sig: string
     pubkey: string
 }
 
+// Payload is the primary class used by the hashmap client. It contains
+// methods for getting, posting, validating, and analyzing hashmap payloads
 export class Payload {
     public uri: string
     public endpoint: string
     public raw: PayloadObject
 
+    // the constructor takes an optional uri and endpoint to be used
+    // by get and post methods
     constructor(opts? : PayloadOptions) {
         if (opts && opts.uri) this.uri = opts.uri
         if (opts && opts.endpoint) this.endpoint = opts.endpoint
     }
+
     // generate takes a base64 encoded key, a message string, and opts object
     // and creates a properly formatted and signed payload
     // it returns a JSON encoded string and sets the class
@@ -78,6 +87,10 @@ export class Payload {
         this.validate(p)
         return JSON.stringify(p)
     }
+
+    // get takes an endpoint and uri string and sends a get request
+    // to a hashmap uri and validates the payload. It returns a promise
+    // that resolves to a json formatted response
     public get(endpoint?: string, uri?: string) {
         if (!endpoint && !this.endpoint) { throw "missing endpoint" }
         if (endpoint) this.endpoint = endpoint
@@ -94,6 +107,9 @@ export class Payload {
         })
         .catch(err => { throw err })
     }
+
+    // post takes a uri and posts the raw payload data to a hashmap server.
+    // It returns a promise the resolves to the json body of the endpoint updated
     public post(uri?: string) {
         if (!uri && !this.uri) { throw "missing uri" }
         if (!this.raw) { throw "missing payload" }
@@ -106,7 +122,13 @@ export class Payload {
         }
         return rp(opts)
     }
+
+    // import takes a raw JSON string of a payload, and validates the payload
     public import(rawjson: string) { this.validate(JSON.parse(rawjson)) }
+
+    // validate takes a payloadObject sets and validates a series of checks
+    // proper including base64 encoding of values, message requirements, and
+    // ensures that the signature is valid based on the message and pubkey
     public validate(p: PayloadObject, opts={}) {
         this.raw     = p
         this.getDataBytes()
@@ -115,32 +137,50 @@ export class Payload {
         this.validateMessage()
         this.validateSig()
     }
+
+    // validateMessage checks that the length of bytes doesn't exceed the
+    // allowable maximum.
     public validateMessage() {
         if (this.getMessageBytes().length > maxMessageBytes) { 
             throw "message length exceeds max threshold" 
         }
     }
+
+    // validateSig concats the sigBytes and the dataBytes and runs the 
+    // nacl.sign.open method to ensure the validation of the data is in place
     public validateSig() {
         const sd = Buffer.concat([this.getSigBytes(), this.getDataBytes()])
         if (!nacl.sign.open(sd, this.getPubkeyBytes())) { 
             throw "signature validation failed" 
         }
     }
+
+    // getPubkeyBytes returns a bytes buffer for payload pubkey
     public getPubkeyBytes() {
         return Buffer.from(this.raw.pubkey, 'base64');
     }
+
+    // getSigBytes returns a bytes buffer for payload sig
     public getSigBytes() {
         return Buffer.from(this.raw.sig, 'base64');
     }
+
+    // getDataBytes returns a bytes buffer for payload data
     public getDataBytes() {
         return Buffer.from(this.raw.data, 'base64');
     }
+
+    // getData returns the payload data as an object
     public getData() { 
         return JSON.parse(this.getDataBytes().toString('ascii')) 
     }
+
+    // getMessageBytes returns a bytes buffer for Payload.Data.Message
     public getMessageBytes() { 
         return Buffer.from(this.getData().message, 'base64') 
     }
+
+    // getMessage returns the Payload.Data.Message as a string
     public getMessage() { 
         return this.getMessageBytes().toString('ascii') 
     }
