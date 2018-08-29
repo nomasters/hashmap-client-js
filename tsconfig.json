@@ -2,16 +2,19 @@
    "compilerOptions": {
      "module": "commonjs",
      "outDir": "dist/",
-     "noImplicitAny": true,
+     "noImplicitAny": false,
      "removeComments": true,
      "preserveConstEnums": true,
      "target": "ES6",
+     "allowJs": true
    },
    "include": [
      "*"
    ],
    "exclude": [
        "node_modules",
-       "**/*.spec.ts"
+       "**/*.spec.ts",
+       "test.ts",
+       "example.js"
    ]
  }

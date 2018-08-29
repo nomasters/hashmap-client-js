@@ -2,8 +2,8 @@ const hashmap = require('./dist/index.js');
 
 // This code expects a base64 encoded ed25519 private key to 
 // be passed in as an arg.
-var args = process.argv.slice(2);
-var key = args[0]
+// var args = process.argv.slice(2);
+// var key = args[0]
 
 var opts1 = {
     uri: "https://prototype.hashmap.sh",

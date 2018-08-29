@@ -1,6 +1,7 @@
 import * as nacl from 'tweetnacl';
 import * as rp from "request-promise";
 import * as BigInt from 'big-integer';
+import * as hrtime from 'browser-process-hrtime';
 
 export const maxMessageBytes: number  = 512
 export const defaultSigMethod: string = 'nacl-sign-ed25519'
@@ -8,16 +9,22 @@ export const dataTTLDefault: number   = 86400  // 1 day in seconds
 export const dataTTLMax: number       = 604800 // 1 week in seconds
 export const version: string          = '0.0.1'
 
-
 // unixNanoNow is the equivelant of the go time.Now().UnixNano()
 // this function was modified from the one in `nano-time` but
 // all values are scoped inside the function and this returns
 // a native JS Number type instead of a string like in `nano-time`
 export function unixNanoNow() {
-    let n = process.hrtime();
+    let n = hrtime();
     let m = new Date().getTime();
-    let d = process.hrtime(n);
+    let d = hrtime(n);
     return BigInt(m).times(1e6).add(BigInt(d[0]).times(1e9).plus(d[1])).valueOf();
+}
+
+// genNaClSignPrivKey generates a new ed25519 private key and returns
+// it as a base64 encoded string
+export function genNaClSignPrivKey() {
+    const keypair = nacl.sign.keyPair()
+    return Buffer.from(keypair.secretKey).toString('base64')
 }
 
 // PayloadOptions is the interface used for the Payload Constructor

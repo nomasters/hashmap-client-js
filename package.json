@@ -4,7 +4,25 @@
   "description": "library for interacting with hashmap payloads and hashmap server",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --require ts-node/register test.ts"
+  },
+  "nyc": {
+    "include": [
+      "index.ts"
+    ],
+    "exclude": [
+      "typings"
+    ],
+    "extension": [
+      ".ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
+    "reporter": [
+      "text-summary"
+    ],
+    "all": true
   },
   "repository": {
     "type": "git",
@@ -21,15 +39,17 @@
     "@types/bluebird": "^3.5.24",
     "@types/request-promise": "^4.1.42",
     "big-integer": "1.6.34",
+    "browser-process-hrtime": "^0.1.2",
     "request": "2.88.0",
     "request-promise": "4.2.2",
     "tweetnacl": "1.0.0"
   },
   "devDependencies": {
-    "@types/chai": "^4.1.4",
-    "@types/mocha": "^5.2.5",
-    "chai": "^4.1.2",
-    "mocha": "^5.2.0",
-    "ts-node": "^7.0.1"
+    "@types/chai": "4.1.4",
+    "@types/mocha": "5.2.5",
+    "chai": "4.1.2",
+    "mocha": "5.2.0",
+    "ts-node": "7.0.1",
+    "typescript": "3.0.1"
   }
 }

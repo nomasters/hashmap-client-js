@@ -3,18 +3,24 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const nacl = require("tweetnacl");
 const rp = require("request-promise");
 const BigInt = require("big-integer");
+const hrtime = require("browser-process-hrtime");
 exports.maxMessageBytes = 512;
 exports.defaultSigMethod = 'nacl-sign-ed25519';
 exports.dataTTLDefault = 86400;
 exports.dataTTLMax = 604800;
 exports.version = '0.0.1';
 function unixNanoNow() {
-    let n = process.hrtime();
+    let n = hrtime();
     let m = new Date().getTime();
-    let d = process.hrtime(n);
+    let d = hrtime(n);
     return BigInt(m).times(1e6).add(BigInt(d[0]).times(1e9).plus(d[1])).valueOf();
 }
 exports.unixNanoNow = unixNanoNow;
+function genNaClSignPrivKey() {
+    const keypair = nacl.sign.keyPair();
+    return Buffer.from(keypair.secretKey).toString('base64');
+}
+exports.genNaClSignPrivKey = genNaClSignPrivKey;
 class Payload {
     constructor(opts) {
         if (opts && opts.uri)
