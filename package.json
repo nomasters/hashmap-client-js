@@ -2,7 +2,7 @@
   "name": "hashmap-client",
   "version": "0.0.1",
   "description": "library for interacting with hashmap payloads and hashmap server",
-  "main": "index.js",
+  "main": "./dist/index.js",
   "scripts": {
     "test": "tsc && nyc mocha --require ts-node/register test.ts"
   },
@@ -38,11 +38,11 @@
   "homepage": "https://github.com/nomasters/hashmap-client-js#readme",
   "dependencies": {
     "@types/big-integer": "0.0.31",
-    "@types/bluebird": "^3.5.24",
-    "@types/chai-as-promised": "^7.1.0",
+    "@types/bluebird": "3.5.24",
+    "@types/chai-as-promised": "7.1.0",
     "@types/request-promise": "4.1.42",
     "big-integer": "1.6.34",
-    "multihashes": "^0.4.14",
+    "multihashes": "0.4.14",
     "request": "2.88.0",
     "request-promise": "4.2.2",
     "tweetnacl": "1.0.0"
@@ -51,9 +51,9 @@
     "@types/chai": "4.1.4",
     "@types/mocha": "5.2.5",
     "chai": "4.1.2",
-    "chai-as-promised": "^7.1.1",
+    "chai-as-promised": "7.1.1",
     "mocha": "5.2.0",
-    "nock": "^9.6.1",
+    "nock": "9.6.1",
     "nyc": "13.0.1",
     "ts-node": "7.0.1",
     "typescript": "3.0.1"
