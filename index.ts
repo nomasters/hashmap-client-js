@@ -1,7 +1,7 @@
 import * as nacl from 'tweetnacl';
 import * as rp from "request-promise";
 import * as BigInt from 'big-integer';
-import * as hrtime from 'browser-process-hrtime';
+import * as multihash from 'multihashes';
 
 export const maxMessageBytes: number  = 512
 export const defaultSigMethod: string = 'nacl-sign-ed25519'
@@ -14,9 +14,9 @@ export const version: string          = '0.0.1'
 // all values are scoped inside the function and this returns
 // a native JS Number type instead of a string like in `nano-time`
 export function unixNanoNow() {
-    let n = hrtime();
+    let n = process.hrtime();
     let m = new Date().getTime();
-    let d = hrtime(n);
+    let d = process.hrtime(n);
     return BigInt(m).times(1e6).add(BigInt(d[0]).times(1e9).plus(d[1])).valueOf();
 }
 
@@ -25,6 +25,20 @@ export function unixNanoNow() {
 export function genNaClSignPrivKey() {
     const keypair = nacl.sign.keyPair()
     return Buffer.from(keypair.secretKey).toString('base64')
+}
+
+// getEd25519PubkeyFromPrivateKey takes a base64 encoded string of the 
+// private key and returns a base64 encoded string of the public key
+export function getEd25519PubkeyFromPrivateKey(privateKey: string) {
+    const privKey = Buffer.from(privateKey, 'base64');
+    return privKey.slice(32,64).toString('base64');
+}
+
+// getBlake2b256MultiHash takes a base64 encoded string of the public key
+// and returns a base58 encoded multihash in blake2b256 formatting
+export function getBlake2b256MultiHash(publicKey: string) {
+    const pubKey = Buffer.from(publicKey, 'base64');
+    return multihash.toB58String(multihash.encode(pubKey, 'blake2b-256'))
 }
 
 // PayloadOptions is the interface used for the Payload Constructor
@@ -70,7 +84,7 @@ export class Payload {
             ttl = opts.ttl
         }
         if (ttl > dataTTLMax) {
-            throw "invalide ttl, exceeds max"
+            throw new Error('invalid ttl, exceeds max')
         }
         const data = {
             message: Buffer.from(message, 'ascii').toString('base64'),
@@ -99,9 +113,9 @@ export class Payload {
     // to a hashmap uri and validates the payload. It returns a promise
     // that resolves to a json formatted response
     public get(endpoint?: string, uri?: string) {
-        if (!endpoint && !this.endpoint) { throw "missing endpoint" }
+        if (!endpoint && !this.endpoint) { throw new Error("missing endpoint") }
         if (endpoint) this.endpoint = endpoint
-        if (!uri && !this.uri) { throw "missing uri" }
+        if (!uri && !this.uri) { throw new Error("missing uri") }
         if (uri) this.uri = uri
         const opts = {
             uri: this.uri + '/' + this.endpoint,
@@ -118,8 +132,8 @@ export class Payload {
     // post takes a uri and posts the raw payload data to a hashmap server.
     // It returns a promise the resolves to the json body of the endpoint updated
     public post(uri?: string) {
-        if (!uri && !this.uri) { throw "missing uri" }
-        if (!this.raw) { throw "missing payload" }
+        if (!uri && !this.uri) { throw new Error("missing uri") }
+        if (!this.raw) { throw new Error("missing payload") }
         if (uri) this.uri = uri
         const opts = {
             uri: this.uri,
@@ -149,7 +163,7 @@ export class Payload {
     // allowable maximum.
     public validateMessage() {
         if (this.getMessageBytes().length > maxMessageBytes) { 
-            throw "message length exceeds max threshold" 
+            throw new Error("message length exceeds max threshold")
         }
     }
 
@@ -158,7 +172,7 @@ export class Payload {
     public validateSig() {
         const sd = Buffer.concat([this.getSigBytes(), this.getDataBytes()])
         if (!nacl.sign.open(sd, this.getPubkeyBytes())) { 
-            throw "signature validation failed" 
+            throw new Error("signature validation failed")
         }
     }
 

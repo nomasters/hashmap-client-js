@@ -4,17 +4,18 @@
   "description": "library for interacting with hashmap payloads and hashmap server",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --require ts-node/register test.ts"
+    "test": "tsc && nyc mocha --require ts-node/register test.ts"
   },
   "nyc": {
     "include": [
-      "index.ts"
+      "dist/index.js"
     ],
     "exclude": [
       "typings"
     ],
     "extension": [
-      ".ts"
+      ".ts",
+      ".js"
     ],
     "require": [
       "ts-node/register"
@@ -36,10 +37,10 @@
   "homepage": "https://github.com/nomasters/hashmap-client-js#readme",
   "dependencies": {
     "@types/big-integer": "0.0.31",
-    "@types/bluebird": "^3.5.24",
-    "@types/request-promise": "^4.1.42",
+    "@types/bluebird": "3.5.24",
+    "@types/request-promise": "4.1.42",
     "big-integer": "1.6.34",
-    "browser-process-hrtime": "^0.1.2",
+    "multihashes": "^0.4.14",
     "request": "2.88.0",
     "request-promise": "4.2.2",
     "tweetnacl": "1.0.0"
@@ -49,6 +50,8 @@
     "@types/mocha": "5.2.5",
     "chai": "4.1.2",
     "mocha": "5.2.0",
+    "nock": "^9.6.1",
+    "nyc": "13.0.1",
     "ts-node": "7.0.1",
     "typescript": "3.0.1"
   }
