@@ -113,27 +113,34 @@ export class Payload {
     // to a hashmap uri and validates the payload. It returns a promise
     // that resolves to a json formatted response
     public get(endpoint?: string, uri?: string) {
-        if (!endpoint && !this.endpoint) { throw new Error("missing endpoint") }
+        if (!endpoint && !this.endpoint) { 
+            return Promise.reject(new Error("missing endpoint")) 
+        }
         if (endpoint) this.endpoint = endpoint
-        if (!uri && !this.uri) { throw new Error("missing uri") }
+        if (!uri && !this.uri) { 
+            return Promise.reject(new Error("missing uri")) 
+        }
         if (uri) this.uri = uri
         const opts = {
             uri: this.uri + '/' + this.endpoint,
             json: true
         }
         return rp(opts)
-        .then(resp => {
-            this.validate(resp)
-            return resp
-        })
-        .catch(err => { throw err })
+            .then(resp => {
+                this.validate(resp)
+                // TODO check that the ENDPOINT matches the pubkey
+                if (this.endpoint !== getBlake2b256MultiHash(this.raw.pubkey)) {
+                    throw new Error('endpoint to pubkey mismatch')
+                }
+                return resp
+            })
     }
 
     // post takes a uri and posts the raw payload data to a hashmap server.
     // It returns a promise the resolves to the json body of the endpoint updated
     public post(uri?: string) {
-        if (!uri && !this.uri) { throw new Error("missing uri") }
-        if (!this.raw) { throw new Error("missing payload") }
+        if (!uri && !this.uri) { return Promise.reject(new Error("missing uri")) }
+        if (!this.raw) { return Promise.reject(new Error("missing payload")) }
         if (uri) this.uri = uri
         const opts = {
             uri: this.uri,

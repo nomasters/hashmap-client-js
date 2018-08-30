@@ -21,6 +21,7 @@
       "ts-node/register"
     ],
     "reporter": [
+      "lcov",
       "text-summary"
     ],
     "all": true
@@ -37,7 +38,8 @@
   "homepage": "https://github.com/nomasters/hashmap-client-js#readme",
   "dependencies": {
     "@types/big-integer": "0.0.31",
-    "@types/bluebird": "3.5.24",
+    "@types/bluebird": "^3.5.24",
+    "@types/chai-as-promised": "^7.1.0",
     "@types/request-promise": "4.1.42",
     "big-integer": "1.6.34",
     "multihashes": "^0.4.14",
@@ -49,6 +51,7 @@
     "@types/chai": "4.1.4",
     "@types/mocha": "5.2.5",
     "chai": "4.1.2",
+    "chai-as-promised": "^7.1.1",
     "mocha": "5.2.0",
     "nock": "^9.6.1",
     "nyc": "13.0.1",

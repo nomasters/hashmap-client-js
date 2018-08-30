@@ -68,12 +68,12 @@ class Payload {
     }
     get(endpoint, uri) {
         if (!endpoint && !this.endpoint) {
-            throw new Error("missing endpoint");
+            return Promise.reject(new Error("missing endpoint"));
         }
         if (endpoint)
             this.endpoint = endpoint;
         if (!uri && !this.uri) {
-            throw new Error("missing uri");
+            return Promise.reject(new Error("missing uri"));
         }
         if (uri)
             this.uri = uri;
@@ -84,16 +84,18 @@ class Payload {
         return rp(opts)
             .then(resp => {
             this.validate(resp);
+            if (this.endpoint !== getBlake2b256MultiHash(this.raw.pubkey)) {
+                throw new Error('endpoint to pubkey mismatch');
+            }
             return resp;
-        })
-            .catch(err => { throw err; });
+        });
     }
     post(uri) {
         if (!uri && !this.uri) {
-            throw new Error("missing uri");
+            return Promise.reject(new Error("missing uri"));
         }
         if (!this.raw) {
-            throw new Error("missing payload");
+            return Promise.reject(new Error("missing payload"));
         }
         if (uri)
             this.uri = uri;

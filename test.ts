@@ -1,9 +1,13 @@
 import * as hashmap from './dist/index';
-import { expect } from 'chai';
 import * as nacl from 'tweetnacl';
 import * as multihash from 'multihashes';
-import 'mocha';
 import * as nock from 'nock';
+import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
+import 'mocha';
+
+chai.use(chaiAsPromised);
+const expect = chai.expect;
 
 describe('Constants', () => {
     const testTable = [
@@ -62,8 +66,8 @@ describe('Unix Nano Time Stamp Generator', () => {
         expect(timestamp).to.be.a('number');
     });
     it('should be accurate to at least Date.now() (1/1000 of a second)', () => {
-        const timestamp  = Math.floor(hashmap.unixNanoNow() / 1000000);
-        const unixTime = Math.floor(Date.now());
+        const timestamp  = Math.floor(hashmap.unixNanoNow() / 10000000);
+        const unixTime = Math.floor(Date.now() / 10);
         expect(timestamp).to.equal(unixTime);
     });
 });
@@ -72,7 +76,7 @@ describe('Payload', () => {
     const defaultPrivKey = hashmap.genNaClSignPrivKey();
     const defaultPubkey  = hashmap.getEd25519PubkeyFromPrivateKey(defaultPrivKey);
     const uri            = 'https://prototype.hashmap.sh'
-    const endpoint       = '2DrjgbD6zUx2svjd4NcXfsTwykspqEQmcC2WC7xeBUyPcBofuo'
+    const endpoint       = hashmap.getBlake2b256MultiHash(defaultPubkey)
     const defaultMessage = 'test'
     
     it('should initialize without uri options', () => {
@@ -101,6 +105,11 @@ describe('Payload', () => {
     it('should generate a signed payload with a custom ttl', () => {
         let p = new hashmap.Payload()
         p.generate(defaultPrivKey, defaultMessage, { ttl: 5 })
+        expect(p.raw.pubkey).to.be.a('string')
+    });
+    it('should generate a signed payload with null message', () => {
+        let p = new hashmap.Payload()
+        p.generate(defaultPrivKey)
         expect(p.raw.pubkey).to.be.a('string')
     });
     it('should reject a signed payload attempt with ttl greater than max', () => {
@@ -145,8 +154,48 @@ describe('Payload', () => {
             endpoint: hashmap.getBlake2b256MultiHash(defaultPubkey),
         }
         let p = new hashmap.Payload(opts)
-        return p.get().then(r => expect(g.raw.pubkey).to.equal(r.pubkey))
+        return expect(p.get()).to.eventually.be.fulfilled;
     });
+    it('should get a payload to a hashmap serve with endpoint and uri passed to the method', () => {
+        let g    = new hashmap.Payload()
+        let body = g.generate(defaultPrivKey, defaultMessage)
+
+        nock(uri)
+        .get('/' + hashmap.getBlake2b256MultiHash(defaultPubkey))
+        .reply(200, body);
+
+        let p = new hashmap.Payload()
+        return expect(p.get(endpoint, uri)).to.eventually.be.fulfilled;
+    });
+
+    it('should reject a get request without an endpoint', () => {
+        let opts = { uri: uri }
+        let p = new hashmap.Payload(opts)
+        return expect(p.get()).to.eventually.be.rejected;
+    });
+    it('should reject a get request without a uri', () => {
+        let opts = { endpoint: endpoint }
+        let p = new hashmap.Payload(opts)
+        return expect(p.get()).to.eventually.be.rejected;
+    });
+    it('should reject a get request from an endpoint to pubkey mismatch', () => {
+        const badKey = hashmap.genNaClSignPrivKey();
+
+        let g    = new hashmap.Payload()
+        let body = g.generate(badKey, defaultMessage)
+
+        nock(uri)
+        .get('/' + hashmap.getBlake2b256MultiHash(defaultPubkey))
+        .reply(200, body);
+
+        let opts = {
+            uri: uri,
+            endpoint: hashmap.getBlake2b256MultiHash(defaultPubkey),
+        }
+        let p = new hashmap.Payload(opts)
+        return expect(p.get()).to.eventually.be.rejected;
+    });
+
     it('should post a payload to a hashmap server', () => {
         nock(uri)
         .post('/')
@@ -155,11 +204,29 @@ describe('Payload', () => {
         let opts = { uri: uri }
         let p = new hashmap.Payload(opts)
         p.generate(defaultPrivKey, defaultMessage)
-        return p.post()
-            .then(r => {
-                expect(r.endpoint).to.equal(hashmap.getBlake2b256MultiHash(defaultPubkey))
-            })
+        return expect(p.post()).to.eventually.be.fulfilled;
+    });
+    it('should post a payload to a hashmap serve with uri passed to post method', () => {
+        nock(uri)
+        .post('/')
+        .reply(200, { endpoint: hashmap.getBlake2b256MultiHash(defaultPubkey) });
+        let p = new hashmap.Payload()
+        p.generate(defaultPrivKey, defaultMessage)
+        return expect(p.post(uri)).to.eventually.be.fulfilled;
+    });
+    it('should reject a post request without a raw payload', () => {
+        let p = new hashmap.Payload()
+        return expect(p.post(uri)).to.eventually.be.rejected;
+    });
+    it('should reject a post request without a uri', () => {
+        let p = new hashmap.Payload()
+        return expect(p.post()).to.eventually.be.rejected;
     });
 
-
+    it('should reject an invalid signature', () => {
+        let p = new hashmap.Payload()
+        p.generate(defaultPrivKey, defaultMessage)
+        p.raw.sig = 'fail' + p.raw.sig
+        expect(() => p.validateSig()).to.throw()
+    });
 });
