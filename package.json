@@ -4,7 +4,8 @@
   "description": "library for interacting with hashmap payloads and hashmap server",
   "main": "./dist/index.js",
   "scripts": {
-    "test": "tsc && nyc mocha --require ts-node/register index-test.ts"
+    "test": "tsc && nyc mocha --require ts-node/register index-test.ts",
+    "coverage": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
   },
   "nyc": {
     "include": [
@@ -52,7 +53,9 @@
     "@types/mocha": "5.2.5",
     "chai": "4.1.2",
     "chai-as-promised": "7.1.1",
+    "coveralls": "^3.0.2",
     "mocha": "5.2.0",
+    "mocha-lcov-reporter": "^1.3.0",
     "nock": "9.6.1",
     "nyc": "13.0.1",
     "ts-node": "7.0.1",
