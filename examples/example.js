@@ -1,4 +1,4 @@
-const hashmap = require('./dist/index.js');
+const hashmap = require('../dist/index.js');
 
 // This code expects a base64 encoded ed25519 private key to 
 // be passed in as an arg.
