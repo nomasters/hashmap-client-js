@@ -19,4 +19,10 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
       - run: yarn test
       - run: yarn run coverage
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build:
+          context: hashmap-client
 
