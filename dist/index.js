@@ -9,6 +9,15 @@ exports.defaultSigMethod = 'nacl-sign-ed25519';
 exports.dataTTLDefault = 86400;
 exports.dataTTLMax = 604800;
 exports.version = '0.0.1';
+var ServerURI = '';
+function setServerURI(uri) {
+    ServerURI = uri;
+}
+exports.setServerURI = setServerURI;
+function getSeverURI() {
+    return ServerURI;
+}
+exports.getSeverURI = getSeverURI;
 function unixNanoNow() {
     let n = process.hrtime();
     let m = new Date().getTime();
@@ -33,6 +42,8 @@ function getBlake2b256MultiHash(publicKey) {
 exports.getBlake2b256MultiHash = getBlake2b256MultiHash;
 class Payload {
     constructor(opts) {
+        if (ServerURI !== '')
+            this.uri = ServerURI;
         if (opts && opts.uri)
             this.uri = opts.uri;
         if (opts && opts.endpoint)

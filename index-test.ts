@@ -72,6 +72,16 @@ describe('Unix Nano Time Stamp Generator', () => {
     });
 });
 
+describe('ServerURI', () => {
+    it('should work with setter and getter functions', () => {
+        const uri = 'https://prototype.hashmap.sh'
+        hashmap.setServerURI(uri)
+        expect(hashmap.getSeverURI()).to.equal(uri)
+        hashmap.setServerURI('')
+    });
+})
+
+
 describe('Payload', () => {
     const defaultPrivKey = hashmap.genNaClSignPrivKey();
     const defaultPubkey  = hashmap.getEd25519PubkeyFromPrivateKey(defaultPrivKey);
@@ -82,6 +92,12 @@ describe('Payload', () => {
     it('should initialize without uri options', () => {
         let p = new hashmap.Payload()
         expect(p.uri).to.be.undefined
+    });
+    it('should initialize with serverURI', () => {
+        hashmap.setServerURI(uri)
+        let p = new hashmap.Payload()
+        hashmap.setServerURI('')
+        expect(p.uri).to.equal(uri)
     });
     it('should initialize without endpoint options', () => {
         let p = new hashmap.Payload()

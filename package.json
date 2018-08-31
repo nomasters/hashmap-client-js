@@ -1,6 +1,6 @@
 {
   "name": "hashmap-client",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "library for interacting with hashmap payloads and hashmap server",
   "main": "./dist/index.js",
   "scripts": {

@@ -9,6 +9,19 @@ export const dataTTLDefault: number   = 86400  // 1 day in seconds
 export const dataTTLMax: number       = 604800 // 1 week in seconds
 export const version: string          = '0.0.1'
 
+// globally scoped variable for uri
+var ServerURI: string = ''
+
+// setServerURI sets the private variable ServerURI
+export function setServerURI(uri: string) {
+    ServerURI = uri
+}
+
+// setServerURI gets the private variable ServerURI
+export function getSeverURI() {
+    return ServerURI
+}
+
 // unixNanoNow is the equivelant of the go time.Now().UnixNano()
 // this function was modified from the one in `nano-time` but
 // all values are scoped inside the function and this returns
@@ -70,6 +83,7 @@ export class Payload {
     // the constructor takes an optional uri and endpoint to be used
     // by get and post methods
     constructor(opts? : PayloadOptions) {
+        if (ServerURI !== '') this.uri = ServerURI
         if (opts && opts.uri) this.uri = opts.uri
         if (opts && opts.endpoint) this.endpoint = opts.endpoint
     }

@@ -34,7 +34,13 @@ To interact with a payload, initiate a new instance of a payload.
 let payload = new hashmap.Payload();
 ```
 
-You can optionally initialize a payload with the `uri` and `endpoint` for a hashmap key-value store
+You can set a global default `ServerURI` with the `setServerURI(uri)` function
+
+```
+hashmap.setServerURI('https://prototype.hashmap.sh')
+```
+
+You can optionally initialize a payload with the `uri` and `endpoint` for a hashmap key-value store on initialization of a new instance of payload. Passing in a uri for a payload overrides the global default for this specific instance.
 
 ```
 let opts = {
