@@ -1,6 +1,7 @@
 import * as hashmap from './dist/index';
 import * as nacl from 'tweetnacl';
 import * as multihash from 'multihashes';
+import * as blake from 'blakejs';
 import * as nock from 'nock';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
@@ -56,7 +57,9 @@ describe('Public Key', () => {
         const pkHash    = hashmap.getBlake2b256MultiHash(pk)
         const multih    = multihash.fromB58String(pkHash)
         const mh        = multihash.decode(multih)
-        expect(mh.digest.toString('base64')).to.equal(pk)
+        const hash      = Buffer.from(blake.blake2b(Buffer.from(pk, 'base64'), null, 32)).toString('base64')
+
+        expect(mh.digest.toString('base64')).to.equal(hash)
     }); 
 });
 
@@ -80,7 +83,6 @@ describe('ServerURI', () => {
         hashmap.setServerURI('')
     });
 })
-
 
 describe('Payload', () => {
     const defaultPrivKey = hashmap.genNaClSignPrivKey();

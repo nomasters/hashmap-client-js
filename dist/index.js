@@ -4,6 +4,7 @@ const nacl = require("tweetnacl");
 const rp = require("request-promise");
 const BigInt = require("big-integer");
 const multihash = require("multihashes");
+const blake = require("blakejs");
 exports.maxMessageBytes = 512;
 exports.defaultSigMethod = 'nacl-sign-ed25519';
 exports.dataTTLDefault = 86400;
@@ -37,7 +38,8 @@ function getEd25519PubkeyFromPrivateKey(privateKey) {
 exports.getEd25519PubkeyFromPrivateKey = getEd25519PubkeyFromPrivateKey;
 function getBlake2b256MultiHash(publicKey) {
     const pubKey = Buffer.from(publicKey, 'base64');
-    return multihash.toB58String(multihash.encode(pubKey, 'blake2b-256'));
+    const hash = Buffer.from(blake.blake2b(pubKey, null, 32));
+    return multihash.toB58String(multihash.encode(hash, 'blake2b-256'));
 }
 exports.getBlake2b256MultiHash = getBlake2b256MultiHash;
 class Payload {

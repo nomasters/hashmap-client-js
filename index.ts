@@ -2,6 +2,7 @@ import * as nacl from 'tweetnacl';
 import * as rp from "request-promise";
 import * as BigInt from 'big-integer';
 import * as multihash from 'multihashes';
+import * as blake from 'blakejs';
 
 export const maxMessageBytes: number  = 512
 export const defaultSigMethod: string = 'nacl-sign-ed25519'
@@ -51,7 +52,8 @@ export function getEd25519PubkeyFromPrivateKey(privateKey: string) {
 // and returns a base58 encoded multihash in blake2b256 formatting
 export function getBlake2b256MultiHash(publicKey: string) {
     const pubKey = Buffer.from(publicKey, 'base64');
-    return multihash.toB58String(multihash.encode(pubKey, 'blake2b-256'))
+    const hash = Buffer.from(blake.blake2b(pubKey, null, 32))
+    return multihash.toB58String(multihash.encode(hash, 'blake2b-256'))
 }
 
 // PayloadOptions is the interface used for the Payload Constructor
@@ -142,7 +144,6 @@ export class Payload {
         return rp(opts)
             .then(resp => {
                 this.validate(resp)
-                // TODO check that the ENDPOINT matches the pubkey
                 if (this.endpoint !== getBlake2b256MultiHash(this.raw.pubkey)) {
                     throw new Error('endpoint to pubkey mismatch')
                 }

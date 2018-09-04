@@ -1,6 +1,6 @@
 {
   "name": "hashmap-client",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "library for interacting with hashmap payloads and hashmap server",
   "main": "./dist/index.js",
   "scripts": {
@@ -43,6 +43,7 @@
     "@types/chai-as-promised": "7.1.0",
     "@types/request-promise": "4.1.42",
     "big-integer": "1.6.34",
+    "blakejs": "^1.1.0",
     "multihashes": "0.4.14",
     "request": "2.88.0",
     "request-promise": "4.2.2",
