@@ -39,27 +39,27 @@
   "homepage": "https://github.com/nomasters/hashmap-client-js#readme",
   "dependencies": {
     "@types/big-integer": "0.0.31",
-    "@types/bluebird": "3.5.24",
-    "@types/chai-as-promised": "7.1.0",
-    "@types/request-promise": "4.1.42",
-    "big-integer": "1.6.34",
-    "blakejs": "^1.1.0",
-    "multihashes": "0.4.14",
-    "request": "2.88.0",
-    "request-promise": "4.2.2",
-    "tweetnacl": "1.0.0"
+    "@types/bluebird": "3.5.36",
+    "@types/request-promise": "4.1.48",
+    "big-integer": "1.6.48",
+    "blakejs": "1.1.1",
+    "multihashes": "4.0.2",
+    "request": "2.88.2",
+    "request-promise": "4.2.6",
+    "tweetnacl": "1.0.3"
   },
   "devDependencies": {
-    "@types/chai": "4.1.4",
-    "@types/mocha": "5.2.5",
-    "chai": "4.1.2",
+    "@types/chai": "4.2.21",
+    "@types/chai-as-promised": "7.1.4",
+    "@types/mocha": "9.0.0",
+    "chai": "4.3.4",
     "chai-as-promised": "7.1.1",
-    "coveralls": "^3.0.2",
-    "mocha": "5.2.0",
+    "coveralls": "3.1.1",
+    "mocha": "9.0.3",
     "mocha-lcov-reporter": "^1.3.0",
-    "nock": "9.6.1",
-    "nyc": "13.0.1",
-    "ts-node": "7.0.1",
-    "typescript": "3.0.1"
+    "nock": "13.1.1",
+    "nyc": "15.1.0",
+    "ts-node": "10.2.0",
+    "typescript": "4.3.5"
   }
 }
